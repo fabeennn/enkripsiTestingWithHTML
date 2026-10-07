@@ -1,6 +1,7 @@
 """OTP Lab - backend Flask untuk simulasi One Time Pad.
 
-Jalankan:  python app.py   lalu buka http://127.0.0.1:5000
+Lokal:  python app.py   lalu buka http://127.0.0.1:5000
+Vercel: file statis ada di folder public/, Vercel otomatis memakai variabel `app` ini.
 """
 import secrets
 from pathlib import Path
@@ -8,7 +9,7 @@ from pathlib import Path
 from flask import Flask, jsonify, request, send_from_directory
 
 BASE_DIR = Path(__file__).resolve().parent
-app = Flask(__name__, static_folder=str(BASE_DIR / "static"), static_url_path="/static")
+app = Flask(__name__, static_folder=str(BASE_DIR / "public"), static_url_path="")
 
 MAKS_KARAKTER = 500
 
