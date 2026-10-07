@@ -6,7 +6,7 @@ Vercel: file statis ada di folder public/, Vercel otomatis memakai variabel `app
 import secrets
 from pathlib import Path
 
-from flask import Flask, jsonify, redirect, request
+from flask import Flask, jsonify, request, send_from_directory
 
 BASE_DIR = Path(__file__).resolve().parent
 app = Flask(__name__, static_folder=str(BASE_DIR / "public"), static_url_path="")
@@ -61,9 +61,48 @@ def baca_hex(data: dict, kunci: str, nama: str) -> bytes:
 
 
 # ---------- halaman ----------
+# File yang boleh dibuka publik. Dicari di public/ dulu, lalu di folder root,
+# jadi tetap jalan walaupun file terupload tidak di dalam folder public/.
+FILE_PUBLIK = {
+    "otp-lab.html": "text/html",
+    "otp-lab.css": "text/css",
+    "app.js": "text/javascript",
+}
+LOKASI = [BASE_DIR / "public", BASE_DIR]
+
+
+def kirim_file(nama: str):
+    for folder in LOKASI:
+        if (folder / nama).is_file():
+            return send_from_directory(folder, nama, mimetype=FILE_PUBLIK[nama])
+    ada = sorted(p.name for p in BASE_DIR.iterdir() if not p.name.startswith("."))
+    return (
+        f"File '{nama}' tidak ditemukan di server.\n"
+        f"Isi folder utama: {ada}\n"
+        "Pastikan file ada di folder public/ atau di root repo dengan nama yang persis sama.",
+        404,
+        {"Content-Type": "text/plain; charset=utf-8"},
+    )
+
+
 @app.get("/")
 def index():
-    return redirect("/otp-lab.html")
+    return kirim_file("otp-lab.html")
+
+
+@app.get("/otp-lab.html")
+def halaman():
+    return kirim_file("otp-lab.html")
+
+
+@app.get("/otp-lab.css")
+def gaya():
+    return kirim_file("otp-lab.css")
+
+
+@app.get("/app.js")
+def skrip():
+    return kirim_file("app.js")
 
 
 # ---------- Percobaan 1: enkripsi + dekripsi ----------
