@@ -1,119 +1,85 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="utf-8">
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>OTP Lab - One Time Pad</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔐</text></svg>">
+  <title>Enkripsi Teks | OTP Lab</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Bagel+Fat+One&family=Nunito:wght@500;700;800&family=VT323&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/otp-lab.css">
+  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="otp-lab.css">
 </head>
 <body>
-  <div class="marquee" aria-hidden="true">
-    <div class="marquee__track">
-      <span>★ satu kunci untuk satu pesan ✿ jangan pernah pakai kunci yang sama dua kali ♥ xor itu menggemaskan ★ kunci harus acak dan sepanjang pesan ✿</span>
-      <span>★ satu kunci untuk satu pesan ✿ jangan pernah pakai kunci yang sama dua kali ♥ xor itu menggemaskan ★ kunci harus acak dan sepanjang pesan ✿</span>
-    </div>
-  </div>
+  <header class="judul">
+    <h1>Enkripsi<br>Teks</h1>
+    <p class="sub">Tulis pesan, pilih algoritma, ambil hasilnya sebagai file .txt.</p>
+  </header>
 
-  <main class="stage">
-    <section class="window" aria-labelledby="judul">
-      <header class="titlebar">
-        <span class="titlebar__name">otp_lab.exe</span>
-        <span class="titlebar__btns" aria-hidden="true"><i>_</i><i>□</i><i>×</i></span>
-      </header>
+  <main class="grid">
+    <!-- INPUT -->
+    <section class="kartu" aria-labelledby="h-input">
+      <h2 id="h-input">Input</h2>
 
-      <div class="window__body">
-        <div class="hero">
-          <div>
-            <h1 id="judul">OTP Lab</h1>
-            <p class="hero__lead">Simulasi One Time Pad: pesanmu di-XOR dengan kunci acak yang panjangnya sama persis. Backend-nya Python, hasilnya langsung tampil di sini.</p>
-          </div>
-          <div class="stickers" aria-hidden="true">
-            <span class="sticker sticker--yellow">100% acak!</span>
-            <span class="sticker sticker--heart">♥</span>
-          </div>
+      <div class="grup">
+        <span class="label" id="l-mode">Mode</span>
+        <div class="toggle" role="radiogroup" aria-labelledby="l-mode">
+          <input type="radio" name="mode" id="mode-enk" value="enkripsi" checked>
+          <label for="mode-enk">Enkripsi</label>
+          <input type="radio" name="mode" id="mode-dek" value="dekripsi">
+          <label for="mode-dek">Dekripsi</label>
         </div>
+      </div>
 
-        <div class="composer">
-          <label for="pesan" class="composer__label">Pesan rahasia</label>
-          <textarea id="pesan" rows="2" maxlength="500" spellcheck="false">BELAJAR KRIPTOGRAFI</textarea>
-          <p class="composer__count" id="hitung" aria-live="polite"></p>
+      <div class="grup">
+        <label class="label" for="teks">Teks</label>
+        <textarea id="teks" rows="7" placeholder="Ketik atau tempel teks di sini..."></textarea>
+        <div class="baris">
+          <label class="tombol kecil" for="file-teks">Muat file .txt</label>
+          <input type="file" id="file-teks" accept=".txt,text/plain" hidden>
+          <span class="hitung" id="hitung">0 karakter</span>
         </div>
+      </div>
 
-        <div class="tabs" role="tablist" aria-label="Percobaan OTP">
-          <button class="tab" role="tab" id="tab-enkripsi" aria-controls="panel-enkripsi" aria-selected="true" style="--tab:var(--pink)">Enkripsi</button>
-          <button class="tab" role="tab" id="tab-dekripsi" aria-controls="panel-dekripsi" aria-selected="false" tabindex="-1" style="--tab:var(--blue)">Dekripsi</button>
-          <button class="tab" role="tab" id="tab-tiga" aria-controls="panel-tiga" aria-selected="false" tabindex="-1" style="--tab:var(--mint)">Uji 3 kali</button>
-          <button class="tab" role="tab" id="tab-utf8" aria-controls="panel-utf8" aria-selected="false" tabindex="-1" style="--tab:var(--butter)">Karakter vs byte</button>
-          <button class="tab" role="tab" id="tab-pendek" aria-controls="panel-pendek" aria-selected="false" tabindex="-1" style="--tab:var(--lilac)">Kunci pendek</button>
-          <button class="tab" role="tab" id="tab-salah" aria-controls="panel-salah" aria-selected="false" tabindex="-1" style="--tab:var(--coral)">Kunci salah</button>
-        </div>
+      <div class="grup">
+        <label class="label" for="metode">Algoritma</label>
+        <select id="metode"></select>
+      </div>
 
-        <section class="panel" role="tabpanel" id="panel-enkripsi" aria-labelledby="tab-enkripsi">
-          <p class="panel__desc">Kunci diacak sepanjang pesan, pesan di-XOR jadi ciphertext, lalu dibuka lagi untuk memastikan hasilnya sama.</p>
-          <button class="btn" id="aksi-enkripsi" type="button">Acak kunci dan enkripsi</button>
-          <div class="out" id="out-enkripsi" aria-live="polite"></div>
-        </section>
+      <div class="grup">
+        <label class="label" for="kunci">Kunci</label>
+        <input type="text" id="kunci" autocomplete="off" spellcheck="false">
+        <p class="petunjuk" id="petunjuk"></p>
+      </div>
 
-        <section class="panel" role="tabpanel" id="panel-dekripsi" aria-labelledby="tab-dekripsi" hidden>
-          <p class="panel__desc">Tempel ciphertext dan kunci (format hex) untuk membuka pesannya. Panjang keduanya harus sama.</p>
-          <div class="pair">
-            <div>
-              <label for="dek-cipher">Ciphertext (hex)</label>
-              <textarea id="dek-cipher" rows="3" spellcheck="false" placeholder="contoh: c678084f85ac..."></textarea>
-            </div>
-            <div>
-              <label for="dek-kunci">Kunci (hex)</label>
-              <textarea id="dek-kunci" rows="3" spellcheck="false" placeholder="contoh: 843d440ecfed..."></textarea>
-            </div>
-          </div>
-          <div class="btnrow">
-            <button class="btn" id="aksi-dekripsi" type="button">Buka pesan</button>
-            <button class="btn btn--ghost" id="isi-dari-enkripsi" type="button">Isi dari hasil enkripsi</button>
-          </div>
-          <div class="out" id="out-dekripsi" aria-live="polite"></div>
-        </section>
+      <button class="tombol besar" id="proses" type="button">Enkripsi</button>
+      <p class="galat" id="galat" role="alert" hidden></p>
+    </section>
 
-        <section class="panel" role="tabpanel" id="panel-tiga" aria-labelledby="tab-tiga" hidden>
-          <p class="panel__desc">Pesan yang sama dienkripsi tiga kali. Kunci dan ciphertext harus berbeda setiap kali.</p>
-          <button class="btn" id="aksi-tiga" type="button">Jalankan 3 kali</button>
-          <div class="out" id="out-tiga" aria-live="polite"></div>
-        </section>
+    <!-- OUTPUT -->
+    <section class="kartu gelap" aria-labelledby="h-output">
+      <h2 id="h-output">Output</h2>
 
-        <section class="panel" role="tabpanel" id="panel-utf8" aria-labelledby="tab-utf8" hidden>
-          <p class="panel__desc">Emoji dan huruf non-ASCII memakai lebih dari 1 byte. Kunci harus sepanjang jumlah byte, bukan jumlah karakter.</p>
-          <div class="pair">
-            <div>
-              <label for="utf8-a">Teks pertama</label>
-              <input id="utf8-a" type="text" value="Halo dunia" maxlength="500">
-            </div>
-            <div>
-              <label for="utf8-b">Teks kedua</label>
-              <input id="utf8-b" type="text" value="Halo 🔐" maxlength="500">
-            </div>
-          </div>
-          <button class="btn" id="aksi-utf8" type="button">Bandingkan panjang</button>
-          <div class="out" id="out-utf8" aria-live="polite"></div>
-        </section>
+      <div class="grup">
+        <label class="label" for="hasil">Hasil</label>
+        <textarea id="hasil" rows="7" readonly placeholder="Hasil muncul di sini."></textarea>
+      </div>
 
-        <section class="panel" role="tabpanel" id="panel-pendek" aria-labelledby="tab-pendek" hidden>
-          <p class="panel__desc">Kunci sengaja dibuat kurang 1 byte dari pesan. XOR harus menolaknya dengan error.</p>
-          <button class="btn" id="aksi-pendek" type="button">Coba kunci pendek</button>
-          <div class="out" id="out-pendek" aria-live="polite"></div>
-        </section>
+      <div class="grup" id="blok-kunci" hidden>
+        <label class="label" for="kunci-hasil">Kunci OTP (simpan, dibutuhkan untuk dekripsi)</label>
+        <textarea id="kunci-hasil" rows="3" readonly></textarea>
+      </div>
 
-        <section class="panel" role="tabpanel" id="panel-salah" aria-labelledby="tab-salah" hidden>
-          <p class="panel__desc">Ciphertext dibuka dengan kunci acak lain. Hasilnya acak, bukan pesan asli.</p>
-          <button class="btn" id="aksi-salah" type="button">Coba kunci salah</button>
-          <div class="out" id="out-salah" aria-live="polite"></div>
-        </section>
+      <p class="statistik" id="statistik" hidden></p>
+      <p class="catatan" id="catatan" hidden>Algoritma klasik hanya memproses huruf A-Z. Spasi, angka, dan tanda baca dibuang, sedangkan Playfair dan Hill bisa menambah huruf X sebagai pengisi.</p>
+
+      <div class="baris rapat">
+        <button class="tombol" id="salin" type="button" disabled>Salin</button>
+        <button class="tombol" id="unduh" type="button" disabled>Unduh .txt</button>
+        <button class="tombol" id="unduh-kunci" type="button" hidden>Unduh kunci .txt</button>
       </div>
     </section>
   </main>
 
-  <script src="/app.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
