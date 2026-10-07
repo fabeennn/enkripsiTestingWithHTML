@@ -6,7 +6,7 @@ Vercel: file statis ada di folder public/, Vercel otomatis memakai variabel `app
 import secrets
 from pathlib import Path
 
-from flask import Flask, jsonify, request, send_from_directory
+from flask import Flask, jsonify, redirect, request
 
 BASE_DIR = Path(__file__).resolve().parent
 app = Flask(__name__, static_folder=str(BASE_DIR / "public"), static_url_path="")
@@ -63,7 +63,7 @@ def baca_hex(data: dict, kunci: str, nama: str) -> bytes:
 # ---------- halaman ----------
 @app.get("/")
 def index():
-    return send_from_directory(app.static_folder, "index.html")
+    return redirect("/otp-lab.html")
 
 
 # ---------- Percobaan 1: enkripsi + dekripsi ----------
